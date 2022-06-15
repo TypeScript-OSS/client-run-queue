@@ -1,0 +1,98 @@
+# Custom
+bin
+lib
+coverage
+
+# Account key
+*serviceAccountKey*
+
+# OSX
+.DS_Store
+
+# IDEs
+.idea
+
+# dotenv environment variables file
+*.env*
+
+# Account key
+*serviceAccountKey*
+
+# Xcode
+#
+.build
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+ios/Pods
+
+# Android/IntelliJ
+#
+android/app/bin
+.settings
+.classpath
+.project
+build/
+.idea
+.gradle
+local.properties
+*.iml
+.vscode
+playstore.json
+
+# node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# BUCK
+buck-out/
+\.buckd/
+
+# fastlane
+*/fastlane/report.xml
+*/fastlane/Preview.html
+*/fastlane/screenshots
+
+# Environment (react-native-config)
+.env*
+config.env.js
+config.env.ts
+GeneratedDotEnv.m
+GeneratedInfoPlistDotEnv.h
+.travis/secrets.zip
+.travis/id_rsa
+
+# Firebase and Sentry
+sentry.properties
+
+# Android emulator logs
+*_API_*.log
+
+# Jest cache
+.jest
+
+# Lokalise API key
+scripts/LOKALISE_API_KEY
+
+# Misc
+.expo/
+android/app/internal/output.json
+android/app/release/app-release.apk
+android/app/internal/app-internal.apk
+android/app/release/output.json

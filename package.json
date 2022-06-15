@@ -1,0 +1,50 @@
+{
+  "name": "client-run-queue",
+  "version": "1.0.0",
+  "description": "A client-friendly run queue",
+  "keywords": [],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/Panchain/client-run-queue.git",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "audit": "yarn audit --moderate",
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "trash coverage docs lib",
+    "generate:docs": "npx typedoc src/index.ts",
+    "lint": "eslint 'src/**/*.ts?(x)' --max-warnings 0",
+    "prepublishOnly": "yarn clean && yarn test && yarn audit && yarn build && yarn generate:docs",
+    "test": "yarn test:check-circular-dependencies && yarn test:unit-tests",
+    "test:check-circular-dependencies": "yarn build && npx madge --circular ./lib",
+    "test:unit-tests:": "npx jest --runInBand --coverage",
+    "test:unit-tests": "yarn test:unit-tests: src"
+  },
+  "peerDependencies": {
+  },
+  "dependencies": {
+    "heap": "^0.2.7"
+  },
+  "devDependencies": {
+    "@types/heap": "^0.2.31",
+    "@types/jest": "^28.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "eslint": "8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-tsdoc": "^0.2.16",
+    "jest": "28.1.1",
+    "jest-environment-jsdom": "^28.1.1",
+    "madge": "5.0.1",
+    "prettier": "2.6.2",
+    "trash-cli": "5.0.0",
+    "ts-jest": "^28.0.5",
+    "typedoc": "^0.22.17",
+    "typescript": "4.7.3"
+  }
+}

@@ -1,0 +1,32 @@
+# Account key
+*serviceAccountKey*
+
+.npmrc
+.nvmrc
+src
+build/docs
+
+# not safe to publish patches and doesn't work
+patches/*
+
+test
+**/*.spec.*
+coverage
+.nyc_output
+jest.config.js
+
+tsconfig.json
+tsconfig.*.json
+tslint.json
+
+.github
+
+.circleci
+.travis.yml
+
+.prettierignore
+.vscode
+.idea
+.editorconfig
+
+*.log

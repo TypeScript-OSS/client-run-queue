@@ -1,0 +1,5 @@
+bin-src/*.ts
+bin-src/**/*.ts
+
+.eslintrc.js
+jest.config.js

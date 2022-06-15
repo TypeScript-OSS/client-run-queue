@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [ "src", "**/__tests__", "**/__test_dependency__" ],
+  "exclude": [ "lib" ]
+}
