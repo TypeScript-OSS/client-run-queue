@@ -2,7 +2,7 @@
   "name": "client-run-queue",
   "version": "1.0.0",
   "description": "A client-friendly run queue",
-  "keywords": [],
+  "keywords": ["promise", "concurrency", "limit", "throttle", "queue", "priority", "typescript", "client"],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/Panchain/client-run-queue.git",
