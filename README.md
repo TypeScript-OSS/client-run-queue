@@ -85,3 +85,9 @@ setRunAfterInteractions((_id, func) => {
   return handle.cancel;
 })
 ```
+
+## Thanks
+
+Thanks for checking it out.  Feel free to create issues or otherwise provide feedback.
+
+client-run-queue is maintained by the team at [Passfolio](passfolio.com).
