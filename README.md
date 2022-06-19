@@ -38,9 +38,9 @@ const main = async () => {
     console.log('failure', result.details);
   }
 
-  // Scheduling more entries using different priorities and marking one as non-cancelable
+  // Scheduling more entries using different priorities and options
 
-  q.schedule(2, 'my-function', doSomeWork);
+  q.schedule(2, 'my-function', doSomeWork, { delayMSec: 1000 });
   q.schedule(0, 'my-function', doSomeWork, { neverCancel: true });
   q.schedule(1, 'my-function', doSomeWork);
 
@@ -90,4 +90,4 @@ setRunAfterInteractions((_id, func) => {
 
 Thanks for checking it out.  Feel free to create issues or otherwise provide feedback.
 
-client-run-queue is maintained by the team at [Passfolio](passfolio.com).
+client-run-queue is maintained by the team at [Passfolio](https://www.passfolio.com).

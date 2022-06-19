@@ -33,10 +33,6 @@ interface InternalRunQueueEntry<T = any> {
   run: () => Promise<T> | T;
 }
 
-const placeholderCancel = () => false;
-const placeholderResolve = () => {};
-const placeholderReject = () => {};
-
 export class RunQueue {
   // Public Readonly Fields
 
@@ -97,73 +93,10 @@ export class RunQueue {
     id: string,
     run: () => Promise<T> | T,
     options: RunQueueScheduleOptions = {}
-  ): RunQueueEntry<T> => {
-    const entry: InternalRunQueueEntry<T> = {
-      id,
-      priority,
-      wasCanceled: false,
-      wasCompleted: false,
-      wasStarted: false,
-      neverCancel: options.neverCancel ?? false,
-      run,
-      // These placeholder functions are immediately replaced inside the promise
-      cancel: placeholderCancel,
-      resolve: placeholderResolve,
-      reject: placeholderReject
-    };
-
-    const promise = new Promise<RunQueueEntryResult<T>>((resolve) => {
-      entry.cancel = () => {
-        if (entry.wasCanceled || entry.wasCompleted || entry.neverCancel) {
-          return false;
-        }
-
-        entry.wasCanceled = true;
-        resolve({ ok: false, details: CANCELED });
-
-        getStatsHandler().trackRunQueueDidCancelEntry?.({ runQueue: this, entryId: id });
-
-        return true;
-      };
-
-      entry.resolve = (value) => {
-        if (entry.wasCompleted || entry.wasCanceled) {
-          return;
-        }
-
-        entry.wasCompleted = true;
-        resolve({ ok: true, details: value });
-      };
-
-      entry.reject = (e) => {
-        if (entry.wasCompleted || entry.wasCanceled) {
-          return;
-        }
-
-        entry.wasCompleted = true;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        resolve({ ok: false, details: e });
-      };
-
-      this.heap.push(entry);
-    });
-
-    if (this.processingCount < this.maxParallel) {
-      runAfterInteractions(this.id, this.processQueue);
-    }
-
-    getStatsHandler().trackRunQueueDidSchedule?.({ runQueue: this, entryId: id });
-
-    return {
-      promise,
-      cancel: () => {
-        entry.cancel();
-      },
-      wasCanceled: () => entry.wasCanceled,
-      wasCompleted: () => entry.wasCompleted,
-      wasStarted: () => entry.wasStarted
-    };
-  };
+  ): RunQueueEntry<T> =>
+    options.delayMSec === undefined
+      ? this.scheduleImmediately(priority, id, run, options)
+      : this.scheduleAfterDelay(priority, id, run, options);
 
   // Private Methods
 
@@ -218,5 +151,136 @@ export class RunQueue {
     });
 
     runAfterInteractions(this.id, this.processQueue);
+  };
+
+  private readonly scheduleAfterDelay = <T>(
+    priority: number,
+    id: string,
+    run: () => Promise<T> | T,
+    options: RunQueueScheduleOptions
+  ): RunQueueEntry<T> => {
+    let wasCanceled = false;
+    let wasResolved = false;
+
+    let runQueueEntry: RunQueueEntry<T> | undefined;
+    let resolver: (value: RunQueueEntryResult<T> | PromiseLike<RunQueueEntryResult<T>>) => void;
+
+    const timeout = setTimeout(async () => {
+      runQueueEntry = this.scheduleImmediately(priority, id, run, options);
+
+      try {
+        const result = await runQueueEntry.promise;
+
+        if (wasResolved) {
+          return;
+        }
+        wasResolved = true;
+
+        resolver(result);
+      } catch (e) {
+        // This shouldn't ever really happen since RunQueue doesn't throw, but just in case
+
+        if (wasResolved) {
+          return;
+        }
+        wasResolved = true;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        resolver({ ok: false, details: e });
+      }
+    }, options.delayMSec);
+
+    return {
+      cancel: () => {
+        if (wasResolved) {
+          return;
+        }
+        wasResolved = true;
+
+        if (!wasCanceled) {
+          wasCanceled = true;
+          clearTimeout(timeout);
+
+          runQueueEntry?.cancel();
+          runQueueEntry = undefined;
+        }
+
+        resolver!({ ok: false, details: CANCELED });
+      },
+      promise: new Promise<RunQueueEntryResult<T>>((resolve) => {
+        resolver = resolve;
+      }),
+      wasCanceled: () => wasCanceled || (runQueueEntry?.wasCanceled() ?? false),
+      wasCompleted: () => runQueueEntry?.wasCompleted() ?? false,
+      wasStarted: () => runQueueEntry?.wasStarted() ?? false
+    };
+  };
+
+  private readonly scheduleImmediately = <T>(
+    priority: number,
+    id: string,
+    run: () => Promise<T> | T,
+    options: RunQueueScheduleOptions
+  ): RunQueueEntry<T> => {
+    let resolver: (value: RunQueueEntryResult<T> | PromiseLike<RunQueueEntryResult<T>>) => void;
+    const entry: InternalRunQueueEntry<T> = {
+      id,
+      priority,
+      wasCanceled: false,
+      wasCompleted: false,
+      wasStarted: false,
+      neverCancel: options.neverCancel ?? false,
+      run,
+      cancel: () => {
+        if (entry.wasCanceled || entry.wasCompleted || entry.neverCancel) {
+          return false;
+        }
+
+        entry.wasCanceled = true;
+        resolver({ ok: false, details: CANCELED });
+
+        getStatsHandler().trackRunQueueDidCancelEntry?.({ runQueue: this, entryId: id });
+
+        return true;
+      },
+      resolve: (value) => {
+        if (entry.wasCompleted || entry.wasCanceled) {
+          return;
+        }
+
+        entry.wasCompleted = true;
+        resolver({ ok: true, details: value });
+      },
+      reject: (e) => {
+        if (entry.wasCompleted || entry.wasCanceled) {
+          return;
+        }
+
+        entry.wasCompleted = true;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        resolver({ ok: false, details: e });
+      }
+    };
+
+    const promise = new Promise<RunQueueEntryResult<T>>((resolve) => {
+      resolver = resolve;
+    });
+    this.heap.push(entry);
+
+    if (this.processingCount < this.maxParallel) {
+      runAfterInteractions(this.id, this.processQueue);
+    }
+
+    getStatsHandler().trackRunQueueDidSchedule?.({ runQueue: this, entryId: id });
+
+    return {
+      promise,
+      cancel: () => {
+        entry.cancel();
+      },
+      wasCanceled: () => entry.wasCanceled,
+      wasCompleted: () => entry.wasCompleted,
+      wasStarted: () => entry.wasStarted
+    };
   };
 }
