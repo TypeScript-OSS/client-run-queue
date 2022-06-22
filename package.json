@@ -15,7 +15,7 @@
     "clean": "trash coverage docs lib",
     "generate:docs": "npx typedoc src/index.ts",
     "lint": "eslint 'src/**/*.ts?(x)' --max-warnings 0",
-    "prepublishOnly": "yarn clean && yarn test && yarn audit && yarn build && yarn generate:docs",
+    "prepublishOnly": "yarn clean && yarn test && yarn audit && yarn clean && yarn build && yarn generate:docs",
     "test": "yarn test:check-circular-dependencies && yarn test:unit-tests",
     "test:check-circular-dependencies": "yarn build && npx madge --circular ./lib",
     "test:unit-tests:": "npx jest --runInBand --coverage",
