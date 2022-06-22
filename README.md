@@ -1,5 +1,8 @@
 # client-run-queue
 
+[![Downloads][downloads-badge]][downloads]
+[![Size][size-badge]][size]
+
 This package provides a RunQueue implementation for scheduling and managing async or time-consuming functions such that client-side interactivity disruptions are minimized.
 
 ## Usage Examples
