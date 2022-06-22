@@ -94,3 +94,13 @@ setRunAfterInteractions((_id, func) => {
 Thanks for checking it out.  Feel free to create issues or otherwise provide feedback.
 
 client-run-queue is maintained by the team at [Passfolio](https://www.passfolio.com).
+
+<!-- Definitions -->
+
+[downloads-badge]: https://img.shields.io/npm/dm/client-run-queue.svg
+
+[downloads]: https://www.npmjs.com/package/client-run-queue
+
+[size-badge]: https://img.shields.io/bundlephobia/minzip/client-run-queue.svg
+
+[size]: https://bundlephobia.com/result?p=client-run-queue
