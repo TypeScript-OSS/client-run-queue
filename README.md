@@ -89,6 +89,8 @@ setRunAfterInteractions((_id, func) => {
 })
 ```
 
+[API Docs](https://panchain.github.io/client-run-queue/)
+
 ## Thanks
 
 Thanks for checking it out.  Feel free to create issues or otherwise provide feedback.
