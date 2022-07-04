@@ -91,7 +91,7 @@ setRunAfterInteractions((_id, func) => {
 })
 ```
 
-[API Docs](https://panchain.github.io/client-run-queue/)
+[API Docs](https://passfolio.github.io/client-run-queue/)
 
 ## Thanks
 
