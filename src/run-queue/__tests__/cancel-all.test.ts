@@ -27,6 +27,16 @@ describe('RunQueue', () => {
       }
     });
 
+    it('cancelAll should cancel delayed entries', async () => {
+      const entry = q.schedule(DEFAULT_PRIORITY, `test`, () => 1, { delayMSec: 1000 });
+
+      await sleep(50);
+
+      q.cancelAll();
+
+      expect(entry.wasCanceled()).toBeTruthy();
+    });
+
     it('cancelAll should do nothing on non-empty queue after all entries have run', async () => {
       const order: number[] = [];
 

@@ -65,8 +65,6 @@ describe('RunQueue', () => {
 
       await sleep(0);
 
-      console.log('foo8', entries.map((e) => e.wasStarted()).join(','));
-
       for (const entry of entries) {
         expect(entry.wasStarted()).toBeTruthy();
       }

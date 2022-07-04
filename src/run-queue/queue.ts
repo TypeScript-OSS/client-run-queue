@@ -4,6 +4,7 @@ import { runAfterInteractions } from '../config/run-after-interactions';
 import { getStatsHandler } from '../config/stats-handler';
 import { CANCELED } from './consts';
 import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC, DEFAULT_MAX_PARALLEL } from './internal/consts';
+import { DoubleLinkedList, DoubleLinkedListNode } from './internal/DoubleLinkedList';
 import type { RunQueueEntry, RunQueueEntryResult } from './types/entry';
 import { RunQueueOptions } from './types/options';
 import { RunQueueScheduleOptions } from './types/schedule-options';
@@ -47,6 +48,10 @@ export class RunQueue {
 
   private processingCount = 0;
 
+  /** The delayed entries that haven't been scheduled yet */
+  private readonly delayedEntries = new DoubleLinkedList<RunQueueEntry<any>>();
+
+  /** The priority queue of scheduled entries, not including delayed entries */
   private readonly heap = new Heap<InternalRunQueueEntry>((a, b) => a.priority - b.priority);
 
   // Constructor
@@ -66,6 +71,14 @@ export class RunQueue {
   /** Cancels all outstanding cancelable entries */
   public readonly cancelAll = () => {
     let numEntriesCanceled = 0;
+
+    // Canceling delayed entries
+    for (const entry of this.delayedEntries.toArray()) {
+      entry.cancel();
+      numEntriesCanceled += 1;
+    }
+
+    // Canceling scheduled entries
     for (const entry of this.heap.toArray()) {
       if (entry.cancel()) {
         numEntriesCanceled += 1;
@@ -75,8 +88,11 @@ export class RunQueue {
     getStatsHandler().trackRunQueueDidCancelAllCancelableEntries?.({ runQueue: this, numEntriesCanceled });
   };
 
-  /** Gets the total queue length, which may include canceled entries that haven't been purged yet */
-  public readonly getQueueLength = () => this.heap.size();
+  /**
+   * Gets the total queue length, which may include canceled entries that haven't been purged yet and delayed entries that aren't yet
+   * ready for execution
+   */
+  public readonly getQueueLength = () => this.heap.size() + this.delayedEntries.getLength();
 
   /**
    * Schedules a new entry to be run.
@@ -165,7 +181,14 @@ export class RunQueue {
     let runQueueEntry: RunQueueEntry<T> | undefined;
     let resolver: (value: RunQueueEntryResult<T> | PromiseLike<RunQueueEntryResult<T>>) => void;
 
+    let delayedEntryNode: DoubleLinkedListNode<RunQueueEntry<any>> | undefined = undefined;
+
     const timeout = setTimeout(async () => {
+      if (delayedEntryNode !== undefined) {
+        this.delayedEntries.remove(delayedEntryNode);
+        delayedEntryNode = undefined;
+      }
+
       runQueueEntry = this.scheduleImmediately(priority, id, run, options);
 
       try {
@@ -190,7 +213,7 @@ export class RunQueue {
       }
     }, options.delayMSec);
 
-    return {
+    const entry: RunQueueEntry<T> = {
       cancel: () => {
         if (wasResolved) {
           return;
@@ -205,6 +228,11 @@ export class RunQueue {
           runQueueEntry = undefined;
         }
 
+        if (delayedEntryNode !== undefined) {
+          this.delayedEntries.remove(delayedEntryNode);
+          delayedEntryNode = undefined;
+        }
+
         resolver!({ ok: false, details: CANCELED });
       },
       promise: new Promise<RunQueueEntryResult<T>>((resolve) => {
@@ -214,6 +242,10 @@ export class RunQueue {
       wasCompleted: () => runQueueEntry?.wasCompleted() ?? false,
       wasStarted: () => runQueueEntry?.wasStarted() ?? false
     };
+
+    delayedEntryNode = this.delayedEntries.append(entry);
+
+    return entry;
   };
 
   private readonly scheduleImmediately = <T>(

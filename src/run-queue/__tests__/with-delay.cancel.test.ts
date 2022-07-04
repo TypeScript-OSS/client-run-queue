@@ -44,16 +44,11 @@ describe('RunQueue', () => {
       const runner = jest.fn(() => 1);
       const entry = q.schedule(DEFAULT_PRIORITY, 'test', runner, { delayMSec: 50 });
 
-      console.log('a');
       expect(await entry.promise).toMatchObject({ ok: true, details: 1 });
-      console.log('b');
 
       entry.cancel();
-      console.log('c');
       expect(entry.wasCanceled()).toBeFalsy();
-      console.log('d');
       expect(runner).toHaveBeenCalled();
-      console.log('e');
     });
 
     it('cancel should work on a long running entry that has started but not completed', async () => {
