@@ -7,6 +7,8 @@ This package provides a RunQueue implementation for scheduling and managing asyn
 
 ## Usage Examples
 
+[Try it Out – CodeSandbox](https://codesandbox.io/s/jolly-mclaren-kmlo7g)
+
 ```typescript
 import { CANCELED, DEFAULT_PRIORITY, RunQueue } from 'client-run-queue';
 
