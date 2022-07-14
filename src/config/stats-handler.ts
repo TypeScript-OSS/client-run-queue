@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { RunQueue } from '../run-queue/queue';
 
 export interface StatsHandler {

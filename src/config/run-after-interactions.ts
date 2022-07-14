@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 type RunAfterInteractionsFunc = (id: string, func: () => Promise<void> | void) => () => void;
 
 const defaultRunAfterInteractions: RunAfterInteractionsFunc = (_id, func) => {
