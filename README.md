@@ -99,6 +99,8 @@ Thanks for checking it out.  Feel free to create issues or otherwise provide fee
 
 client-run-queue is maintained by the team at [Passfolio](https://www.passfolio.com).
 
+Be sure to check out our other [Open Source @ Passfolio](https://github.com/Passfolio) projects as well.
+
 <!-- Definitions -->
 
 [downloads-badge]: https://img.shields.io/npm/dm/client-run-queue.svg
