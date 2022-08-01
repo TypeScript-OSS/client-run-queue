@@ -1,6 +1,11 @@
 /* istanbul ignore file */
 
-type RunAfterInteractionsFunc = (id: string, func: () => Promise<void> | void) => () => void;
+/**
+ * A function used to run another function "after interactions".
+ *
+ * @see `setRunAfterInteractions`
+ */
+export type RunAfterInteractionsFunc = (id: string, func: () => Promise<void> | void) => () => void;
 
 const defaultRunAfterInteractions: RunAfterInteractionsFunc = (_id, func) => {
   const timeout = setTimeout(func, 0);
