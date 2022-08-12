@@ -2,6 +2,7 @@
 bin
 lib
 coverage
+dev-build
 
 # Account key
 *serviceAccountKey*
