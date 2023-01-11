@@ -19,14 +19,14 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "audit": "yarn audit --moderate",
     "build": "tsc -p tsconfig.build.json",
     "build:dev": "trash dev-build && yarn build && mkdir dev-build && cp -r lib dev-build && cp package.json dev-build && (cd dev-build && echo 'package' `pwd`)",
     "clean": "trash coverage dev-build docs lib",
     "generate:docs": "npx typedoc src/index.ts",
     "lint": "eslint 'src/**/*.ts?(x)' --max-warnings 0",
-    "prepublishOnly": "yarn clean && yarn test && yarn lint && yarn audit && yarn clean && yarn build && yarn generate:docs",
+    "prepublishOnly": "yarn clean && yarn test && yarn lint && yarn test:audit && yarn clean && yarn build && yarn generate:docs",
     "test": "yarn test:check-circular-dependencies && yarn test:unit-tests",
+    "test:audit": "yarn audit --level moderate; [[ $? -ge 4 ]] && exit 1 || exit 0",
     "test:check-circular-dependencies": "yarn build && npx madge --circular ./lib",
     "test:unit-tests:": "npx jest --runInBand --coverage",
     "test:unit-tests": "yarn test:unit-tests: src"
