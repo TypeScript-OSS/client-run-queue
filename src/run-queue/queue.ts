@@ -1,4 +1,5 @@
 import Heap from 'heap';
+import queueMicrotask from 'queue-microtask';
 
 import { runAfterInteractions } from '../config/run-after-interactions';
 import { getStatsHandler } from '../config/stats-handler';
@@ -183,7 +184,11 @@ export class RunQueue {
 
     let delayedEntryNode: DoubleLinkedListNode<RunQueueEntry<any>> | undefined = undefined;
 
-    const timeout = setTimeout(async () => {
+    const runner = async () => {
+      if (wasCanceled) {
+        return;
+      }
+
       if (delayedEntryNode !== undefined) {
         this.delayedEntries.remove(delayedEntryNode);
         delayedEntryNode = undefined;
@@ -211,7 +216,9 @@ export class RunQueue {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         resolver({ ok: false, details: e });
       }
-    }, options.delayMSec);
+    };
+    const delayMSec = options.delayMSec ?? 0;
+    const timeout = delayMSec <= 0 ? queueMicrotask(runner) : setTimeout(runner, delayMSec);
 
     const entry: RunQueueEntry<T> = {
       cancel: () => {
@@ -222,7 +229,9 @@ export class RunQueue {
 
         if (!wasCanceled) {
           wasCanceled = true;
-          clearTimeout(timeout);
+          if (timeout !== undefined) {
+            clearTimeout(timeout);
+          }
 
           runQueueEntry?.cancel();
           runQueueEntry = undefined;

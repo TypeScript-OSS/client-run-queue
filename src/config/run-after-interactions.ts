@@ -1,5 +1,7 @@
 /* istanbul ignore file */
 
+import queueMicrotask from 'queue-microtask';
+
 /**
  * A function used to run another function "after interactions".
  *
@@ -8,10 +10,17 @@
 export type RunAfterInteractionsFunc = (id: string, func: () => Promise<void> | void) => () => void;
 
 const defaultRunAfterInteractions: RunAfterInteractionsFunc = (_id, func) => {
-  const timeout = setTimeout(func, 0);
+  let wasCanceled = false;
+  queueMicrotask(() => {
+    if (wasCanceled) {
+      return;
+    }
+
+    func();
+  });
 
   return () => {
-    clearTimeout(timeout);
+    wasCanceled = true;
   };
 };
 

@@ -64,12 +64,17 @@ describe('RunQueue', () => {
     });
 
     it('cancelAll should cancel remaining entries on non-empty queue after some entries have run', async () => {
-      const entries = [1, 2, 3].map((value) =>
-        q.schedule(DEFAULT_PRIORITY, `test${value}`, async () => {
-          // + 1 to make sure it exceeds DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC
-          await sleep(DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC + 1);
-          return value;
-        })
+      const entries = [1, 2, 3].map((value, index) =>
+        q.schedule(
+          DEFAULT_PRIORITY,
+          `test${value}`,
+          async () => {
+            // + 1 to make sure it exceeds DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC
+            await sleep(DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC + 1);
+            return value;
+          },
+          { delayMSec: 50 * index }
+        )
       );
       const [firstEntry, ...restEntries] = entries;
 
