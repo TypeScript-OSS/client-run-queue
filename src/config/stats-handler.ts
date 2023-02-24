@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { RunQueue } from '../run-queue/queue';
+import type { RunQueue } from '../run-queue/queue';
 
 export interface StatsHandler {
   /** Called whenever cancelAll is called on RunQueue */

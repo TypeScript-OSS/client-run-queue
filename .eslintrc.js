@@ -24,6 +24,7 @@ module.exports = {
   rules: {
     'import/namespace': 'off',
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
+    '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-empty-function': 'off',

@@ -5,10 +5,11 @@ import { runAfterInteractions } from '../config/run-after-interactions';
 import { getStatsHandler } from '../config/stats-handler';
 import { CANCELED } from './consts';
 import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC, DEFAULT_MAX_PARALLEL } from './internal/consts';
-import { DoubleLinkedList, DoubleLinkedListNode } from './internal/DoubleLinkedList';
+import type { DoubleLinkedListNode } from './internal/DoubleLinkedList';
+import { DoubleLinkedList } from './internal/DoubleLinkedList';
 import type { RunQueueEntry, RunQueueEntryResult } from './types/entry';
-import { RunQueueOptions } from './types/options';
-import { RunQueueScheduleOptions } from './types/schedule-options';
+import type { RunQueueOptions } from './types/options';
+import type { RunQueueScheduleOptions } from './types/schedule-options';
 
 interface InternalRunQueueEntry<T = any> {
   /** A technical but human-readable ID of the entry */
