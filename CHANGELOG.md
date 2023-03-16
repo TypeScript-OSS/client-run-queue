@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.2] - 2022-03-16
+
+- Pointing to new home at TypeScript OSS.
+
 ## [2.0.1] - 2022-02-02
 
 ### Changed
