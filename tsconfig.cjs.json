@@ -1,5 +1,9 @@
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "./lib/cjs"
+  },
   "include": [ "src" ],
   "exclude": [ "**/__tests__", "**/__test_dependency__", "lib" ]
 }

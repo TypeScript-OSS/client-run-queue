@@ -1,10 +1,12 @@
 module.exports = {
   preset: 'ts-jest',
+  extensionsToTreatAsEsm: [".ts"],
   testEnvironment: 'jsdom',
   coverageReporters: ['text', 'html'],
   globals: {
     'ts-jest': {
-      isolatedModules: true
+      isolatedModules: true,
+      useESM: true
     }
   },
   coverageThreshold: {

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ES2015",
+    "outDir": "./lib/mjs"
+  },
+  "include": [ "src" ],
+  "exclude": [ "**/__tests__", "**/__test_dependency__", "lib" ]
+}

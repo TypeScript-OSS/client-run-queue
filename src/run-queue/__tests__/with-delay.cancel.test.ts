@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 import { sleep } from '../../__test_dependency__';
 import { CANCELED, DEFAULT_PRIORITY } from '../consts';
 import { RunQueue } from '../queue';
