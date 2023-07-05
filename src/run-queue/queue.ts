@@ -7,34 +7,11 @@ import { CANCELED } from './consts';
 import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC, DEFAULT_MAX_PARALLEL } from './internal/consts';
 import type { DoubleLinkedListNode } from './internal/DoubleLinkedList';
 import { DoubleLinkedList } from './internal/DoubleLinkedList';
+import { InternalRunQueueEntryImpl } from './internal/InternalRunQueueEntryImpl';
+import type { InternalRunQueueEntry } from './internal/types/InternalRunQueueEntry';
 import type { RunQueueEntry, RunQueueEntryResult } from './types/entry';
 import type { RunQueueOptions } from './types/options';
 import type { RunQueueScheduleOptions } from './types/schedule-options';
-
-interface InternalRunQueueEntry<T = any> {
-  /** A technical but human-readable ID of the entry */
-  id: string;
-  /** Lower number is higher priority */
-  priority: number;
-  /** If `true`, this entry can't be canceled */
-  neverCancel: boolean;
-
-  /** If `true`, this entry was canceled */
-  wasCanceled: boolean;
-  /** If `true`, this entry was completed */
-  wasCompleted: boolean;
-  /** If `true`, this entry was started */
-  wasStarted: boolean;
-
-  /** Tries to cancel this entry */
-  cancel: () => boolean;
-  /** Called if an error occurred while running this entry */
-  reject: (e: any) => void;
-  /** Called when this entry is completed */
-  resolve: (value: T) => void;
-  /** Runs this entry */
-  run: () => Promise<T> | T;
-}
 
 export class RunQueue {
   // Public Readonly Fields
@@ -124,7 +101,7 @@ export class RunQueue {
     }
 
     let cursor = this.heap.pop();
-    while (cursor !== undefined && cursor.wasCanceled) {
+    while (cursor !== undefined && cursor.wasCanceled()) {
       cursor = this.heap.pop();
     }
     return cursor;
@@ -144,7 +121,6 @@ export class RunQueue {
       try {
         this.processingCount += 1;
 
-        next.wasStarted = true;
         next.resolve(await next.run());
         success = true;
       } catch (e) {
@@ -264,49 +240,9 @@ export class RunQueue {
     run: () => Promise<T> | T,
     options: RunQueueScheduleOptions
   ): RunQueueEntry<T> => {
-    let resolver: (value: RunQueueEntryResult<T> | PromiseLike<RunQueueEntryResult<T>>) => void;
-    const entry: InternalRunQueueEntry<T> = {
-      id,
-      priority,
-      wasCanceled: false,
-      wasCompleted: false,
-      wasStarted: false,
-      neverCancel: options.neverCancel ?? false,
-      run,
-      cancel: () => {
-        if (entry.wasCanceled || entry.wasCompleted || entry.neverCancel) {
-          return false;
-        }
+    // let resolver: (value: RunQueueEntryResult<T> | PromiseLike<RunQueueEntryResult<T>>) => void;
+    const entry = new InternalRunQueueEntryImpl<T>(this, id, priority, options.neverCancel ?? false, run);
 
-        entry.wasCanceled = true;
-        resolver({ ok: false, details: CANCELED });
-
-        getStatsHandler().trackRunQueueDidCancelEntry?.({ runQueue: this, entryId: id });
-
-        return true;
-      },
-      resolve: (value) => {
-        if (entry.wasCompleted || entry.wasCanceled) {
-          return;
-        }
-
-        entry.wasCompleted = true;
-        resolver({ ok: true, details: value });
-      },
-      reject: (e) => {
-        if (entry.wasCompleted || entry.wasCanceled) {
-          return;
-        }
-
-        entry.wasCompleted = true;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        resolver({ ok: false, details: e });
-      }
-    };
-
-    const promise = new Promise<RunQueueEntryResult<T>>((resolve) => {
-      resolver = resolve;
-    });
     this.heap.push(entry);
 
     if (this.processingCount < this.maxParallel) {
@@ -315,14 +251,6 @@ export class RunQueue {
 
     getStatsHandler().trackRunQueueDidSchedule?.({ runQueue: this, entryId: id });
 
-    return {
-      promise,
-      cancel: () => {
-        entry.cancel();
-      },
-      wasCanceled: () => entry.wasCanceled,
-      wasCompleted: () => entry.wasCompleted,
-      wasStarted: () => entry.wasStarted
-    };
+    return entry;
   };
 }
