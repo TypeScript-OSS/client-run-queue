@@ -44,6 +44,7 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/require-await': 'off',
     '@typescript-eslint/strict-boolean-expressions': 'error',
+    '@typescript-eslint/switch-exhaustiveness-check': 'error',
     'no-constant-condition': 'off',
     'no-extra-boolean-cast': 'off',
     eqeqeq: ['error', 'always'],
