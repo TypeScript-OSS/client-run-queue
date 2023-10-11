@@ -39,7 +39,10 @@ export class RunQueue {
    * @param id - A technical but human-readable ID for this queue
    * @param options - Options for customizing the behavior of the queue
    */
-  constructor(public readonly id: string, options: RunQueueOptions = {}) {
+  constructor(
+    public readonly id: string,
+    options: RunQueueOptions = {}
+  ) {
     this.continuousWorkMaxEntries = options.continuousWorkMaxEntries ?? Number.MAX_SAFE_INTEGER;
     this.continuousWorkTimeLimitMSec = options.continuousWorkTimeLimitMSec ?? DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC;
     this.maxParallel = options.maxParallel ?? DEFAULT_MAX_PARALLEL;
