@@ -1,6 +1,6 @@
-import { sleep } from '../../__test_dependency__';
-import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC } from '../internal/consts';
-import { RunQueue } from '../queue';
+import { sleep } from '../../__test_dependency__/sleep.js';
+import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC } from '../internal/consts.js';
+import { RunQueue } from '../queue.js';
 
 describe('RunQueue', () => {
   describe('with default settings', () => {

@@ -11,7 +11,7 @@ export interface InternalRunQueueEntry<T = any> extends RunQueueEntry<T> {
   /** Tries to cancel this entry */
   readonly cancel: () => boolean;
   /** Called if an error occurred while running this entry */
-  readonly reject: (e: any) => void;
+  readonly reject: (e: unknown) => void;
   /** Called when this entry is completed */
   readonly resolve: (value: T) => void;
   /** Runs this entry */

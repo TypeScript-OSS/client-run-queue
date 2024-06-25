@@ -6,5 +6,5 @@
     "noEmit": false
   },
   "include": [ "src" ],
-  "exclude": [ "**/__tests__", "**/__test_dependency__", "lib" ]
+  "exclude": [ "**/__tests__", "**/__test_dependency__", "coverage", "lib" ]
 }

@@ -1,8 +1,8 @@
-import { sleep } from '../../__test_dependency__';
-import { resetStatsHandler, setStatsHandler } from '../../config/stats-handler';
-import { DEFAULT_PRIORITY } from '../consts';
-import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC } from '../internal/consts';
-import { RunQueue } from '../queue';
+import { sleep } from '../../__test_dependency__/sleep.js';
+import { resetStatsHandler, setStatsHandler } from '../../config/stats-handler.js';
+import { DEFAULT_PRIORITY } from '../consts.js';
+import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC } from '../internal/consts.js';
+import { RunQueue } from '../queue.js';
 
 describe('RunQueue', () => {
   describe('with default settings', () => {
@@ -28,11 +28,11 @@ describe('RunQueue', () => {
     });
 
     it('running three very simple async functions should be completed in a single run queue iteration', async () => {
-      let numRunQueueIteratons = 0;
+      let numRunQueueIterations = 0;
       setStatsHandler({
         trackRunQueueDidCompleteIteration: ({ runQueue }) => {
           if (runQueue === q) {
-            numRunQueueIteratons += 1;
+            numRunQueueIterations += 1;
           }
         }
       });
@@ -46,7 +46,7 @@ describe('RunQueue', () => {
         await Promise.all(entries.map((entry) => entry.promise));
 
         // Can be called right before the iteration stat is updated or right after
-        expect(numRunQueueIteratons).toBeLessThanOrEqual(1);
+        expect(numRunQueueIterations).toBeLessThanOrEqual(1);
 
         let entryIndex = 0;
         for (const entry of entries) {
@@ -60,11 +60,11 @@ describe('RunQueue', () => {
     });
 
     it('running three async functions that each take longer than the continuousWorkTimeLimitMSec limit should take three run queue iterations', async () => {
-      let numRunQueueIteratons = 0;
+      let numRunQueueIterations = 0;
       setStatsHandler({
         trackRunQueueDidCompleteIteration: ({ runQueue }) => {
           if (runQueue === q) {
-            numRunQueueIteratons += 1;
+            numRunQueueIterations += 1;
           }
         }
       });
@@ -84,7 +84,7 @@ describe('RunQueue', () => {
         await Promise.all(entries.map((entry) => entry.promise));
 
         // Can be called right before the last iteration stat is updated or right after
-        expect(numRunQueueIteratons).toBeGreaterThanOrEqual(2);
+        expect(numRunQueueIterations).toBeGreaterThanOrEqual(2);
 
         let entryIndex = 0;
         for (const entry of entries) {

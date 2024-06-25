@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 
-import { sleep } from '../../__test_dependency__';
-import { CANCELED, DEFAULT_PRIORITY } from '../consts';
-import { RunQueue } from '../queue';
+import { sleep } from '../../__test_dependency__/sleep.js';
+import { CANCELED, DEFAULT_PRIORITY } from '../consts.js';
+import { RunQueue } from '../queue.js';
 
 describe('RunQueue', () => {
   describe('when scheduling with delay', () => {

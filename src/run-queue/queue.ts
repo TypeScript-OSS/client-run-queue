@@ -1,13 +1,13 @@
+import type { DoubleLinkedListNode } from 'doublell';
+import { DoubleLinkedList } from 'doublell';
 import Heap from 'heap';
 import queueMicrotask from 'queue-microtask';
 
-import { runAfterInteractions } from '../config/run-after-interactions';
-import { getStatsHandler } from '../config/stats-handler';
-import { CANCELED } from './consts';
-import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC, DEFAULT_MAX_PARALLEL } from './internal/consts';
-import type { DoubleLinkedListNode } from './internal/DoubleLinkedList';
-import { DoubleLinkedList } from './internal/DoubleLinkedList';
-import { InternalRunQueueEntryImpl } from './internal/InternalRunQueueEntryImpl';
+import { runAfterInteractions } from '../config/run-after-interactions.js';
+import { getStatsHandler } from '../config/stats-handler.js';
+import { CANCELED } from './consts.js';
+import { DEFAULT_CONTINUOUS_WORK_TIME_LIMIT_MSEC, DEFAULT_MAX_PARALLEL } from './internal/consts.js';
+import { InternalRunQueueEntryImpl } from './internal/InternalRunQueueEntryImpl.js';
 import type { InternalRunQueueEntry } from './internal/types/InternalRunQueueEntry';
 import type { RunQueueEntry, RunQueueEntryResult } from './types/entry';
 import type { RunQueueOptions } from './types/options';
@@ -193,7 +193,6 @@ export class RunQueue {
         }
         wasResolved = true;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         resolver({ ok: false, details: e });
       }
     };

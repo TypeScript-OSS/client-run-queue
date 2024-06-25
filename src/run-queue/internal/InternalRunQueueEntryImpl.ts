@@ -1,5 +1,5 @@
-import { getStatsHandler } from '../../config/stats-handler';
-import { CANCELED } from '../consts';
+import { getStatsHandler } from '../../config/stats-handler.js';
+import { CANCELED } from '../consts.js';
 import type { RunQueue } from '../queue';
 import type { RunQueueEntryResult } from '../types/entry';
 import type { InternalRunQueueEntry } from './types/InternalRunQueueEntry';
@@ -64,13 +64,13 @@ export class InternalRunQueueEntryImpl<T = any> implements InternalRunQueueEntry
     this.resolver_({ ok: true, details: value });
   }
 
-  public reject(e: any) {
+  public reject(e: unknown) {
     if (this.wasCompleted_ || this.wasCanceled_) {
       return;
     }
 
     this.wasCompleted_ = true;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     this.resolver_({ ok: false, details: e });
   }
 

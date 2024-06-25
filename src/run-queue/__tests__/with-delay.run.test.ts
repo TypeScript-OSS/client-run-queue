@@ -1,6 +1,6 @@
-import { sleep } from '../../__test_dependency__';
-import { DEFAULT_PRIORITY } from '../../run-queue/consts';
-import { RunQueue } from '../../run-queue/queue';
+import { sleep } from '../../__test_dependency__/sleep.js';
+import { DEFAULT_PRIORITY } from '../../run-queue/consts.js';
+import { RunQueue } from '../../run-queue/queue.js';
 
 describe('RunQueue', () => {
   describe('when scheduling with delay', () => {

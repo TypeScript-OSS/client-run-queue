@@ -5,7 +5,7 @@
  * - Canceled entries will have `ok: false` and `details: CANCELED`
  * - Unsuccessfully completed entries that haven't been canceled will have `ok: false` and the `details` field may contain a caught value
  */
-export type RunQueueEntryResult<T> = { ok: true; details: T } | { ok: false; details: any };
+export type RunQueueEntryResult<T> = { ok: true; details: T } | { ok: false; details: unknown };
 
 /** An entry reference, which can be used to cancel the entry, check its status, or to get the promised value. */
 export interface RunQueueEntry<T> {
