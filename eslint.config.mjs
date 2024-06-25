@@ -22,7 +22,15 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['coverage/**/*', 'lib', 'bin-src/*.ts', 'bin-src/**/*.ts', '**/eslint.config.mjs', '**/jest.config.mjs', '.prettierrc.mjs']
+    ignores: [
+      'coverage/**/*',
+      'lib/**/*',
+      'bin-src/*.ts',
+      'bin-src/**/*.ts',
+      '**/eslint.config.mjs',
+      '**/jest.config.mjs',
+      '.prettierrc.mjs'
+    ]
   },
   ...fixupConfigRules(
     compat.extends(
