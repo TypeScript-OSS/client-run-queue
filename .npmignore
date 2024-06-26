@@ -1,6 +1,5 @@
 .prettierrc.mjs
 eslint.config.mjs
-src
 typedoc.json
 
 # Account key
